@@ -76,7 +76,7 @@ class NewVisitorTest(LiveServerTestCase):
 		# monica gets her own unique URL
 		monicas_list_url = self.browser.current_url
 		self.assertRegex(monicas_list_url, '/lists/.+')
-		self.assertself.assertNotEqual(monicas_list_url, tom_list_url)
+		self.assertNotEqual(monicas_list_url, tom_list_url)
 
 		# again, there is no trace of tom's list
 		page_text = self.browser.findelement_by_tag_name('body').text
