@@ -40,6 +40,8 @@ class NewVisitorTest(LiveServerTestCase):
 		# when he hits enter the page updates and now lists
 		# "1. buy milk" as an item in a to-do list
 		inputbox.send_keys(Keys.ENTER)
+		tom_list_url = self.browser.current_url
+		self.assertRegex(tom_list_url, '/lists/.+')
 		self.check_for_row_in_list_table('1: buy milk')
 
 		# there is still a text box inviting tom to add another item
@@ -52,10 +54,33 @@ class NewVisitorTest(LiveServerTestCase):
 		self.check_for_row_in_list_table('1: buy milk')
 		self.check_for_row_in_list_table('2: make tea with milk') 
 
-		# tom sees the site has generated a unique URL for him
-		# there is some explanatory text to that effect
-		self.fail('Finish the test!')
 
-		# tom visits his URL, the to do list is still there
+		# now a new user, monica comes along to the site
 
-		# satisfied, tom takes a nap	
+		# we use a new browser session to make sure that none of tom's
+		# information is comes through from cookies etc
+		self.browser.quit()
+		self.browser= webdriver.Firefox()
+
+		# monica visits the home page. there is no sign of tom's list
+		self.browser.get(self.live_server_url)
+		page_text = self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('buy milk', page_text)
+		self.assertNotIn('make tea with milk', page_text)
+
+		# monica starts a new list by entering a new item
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		inputbox.send_keys('make friends')
+		inputbox.send_keys(Keys.ENTER)
+	
+		# monica gets her own unique URL
+		monicas_list_url = self.browser.current_url
+		self.assertRegex(monicas_list_url, '/lists/.+')
+		self.assertself.assertNotEqual(monicas_list_url, tom_list_url)
+
+		# again, there is no trace of tom's list
+		page_text = self.browser.findelement_by_tag_name('body').text
+		self.assertNotIn('buy milk', page_text)
+		self.assertIn('make friends', page_text)
+
+		# satisfied, both tom and monica go to sleep
