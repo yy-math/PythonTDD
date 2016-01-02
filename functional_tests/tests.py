@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import unittest
 from django.test import LiveServerTestCase
 
 class NewVisitorTest(LiveServerTestCase):
@@ -79,8 +78,31 @@ class NewVisitorTest(LiveServerTestCase):
 		self.assertNotEqual(monicas_list_url, tom_list_url)
 
 		# again, there is no trace of tom's list
-		page_text = self.browser.findelement_by_tag_name('body').text
+		page_text = self.browser.find_element_by_tag_name('body').text
 		self.assertNotIn('buy milk', page_text)
 		self.assertIn('make friends', page_text)
 
 		# satisfied, both tom and monica go to sleep
+
+	def test_layout_and_styling(self):
+		# tom goes to the home page
+		self.browser.get(self.live_server_url)
+		self.browser.set_window_size(1024, 768)
+
+		# he notices that the input box is nicely centered
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		self.assertAlmostEqual(
+			inputbox.location['x'] + inputbox.size['width'] / 2,
+			512,
+			delta = 5
+		)
+
+		# he starts a new list and sees the input is 
+		# nicely centered there too
+		inputbox.send_keys('testing\n')
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		self.assertAlmostEqual(
+			inputbox.location['x'] + inputbox.size['width'] / 2,
+			512,
+			delta=5
+		)
